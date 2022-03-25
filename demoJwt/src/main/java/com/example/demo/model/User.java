@@ -42,7 +42,7 @@ public class User {
 
     @JsonIgnore
     @NotBlank
-    @Size(min = 3,max = 50)
+    @Size(min = 3,max = 100)
     @Column(name = "password")
     private String password;
 
@@ -58,4 +58,11 @@ public class User {
     Set<Role> roles=new HashSet<>();
 
 
+    public User(String name, String username, String password, String email, String encode) {
+        this.name=name;
+        this.username=username;
+        this.password=password;
+        this.email=email;
+        this.password=encode;
+    }
 }

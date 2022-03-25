@@ -37,12 +37,13 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
-            filterChain.doFilter(request,response);
         }catch (Exception e){
             logger.error("Can't not set User Authentication!");
         }
+        filterChain.doFilter(request,response);
     }
     private String getJwtFromRequest(HttpServletRequest request){
+        System.out.println(request);
         String authHeader=request.getHeader("Authorization");
         if(authHeader!=null&&authHeader.startsWith("Bearer"))
             return authHeader.substring(7);
