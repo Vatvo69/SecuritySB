@@ -1,20 +1,24 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.request.SignInForm;
 import com.example.demo.dto.request.SignUpForm;
+import com.example.demo.dto.response.ResponseJwt;
 import com.example.demo.dto.response.ResponseMessage;
 import com.example.demo.model.Role;
 import com.example.demo.model.RoleName;
 import com.example.demo.model.User;
 import com.example.demo.security.jwt.JwtProvider;
+import com.example.demo.security.userprincipal.UserPrincipal;
 import com.example.demo.service.impl.RoleService;
 import com.example.demo.service.impl.UserService;
-import org.hibernate.annotations.NaturalId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,7 +72,17 @@ public class AuthController {
             }
         });
         user.setRoles(roles);
-        userService.save(user);
+        //userService.save(user);
         return new ResponseEntity<>(new ResponseMessage("Create Success!"),HttpStatus.OK);
+    }
+    @PostMapping("/signin")
+    public ResponseEntity<?> login(@RequestBody SignInForm signInForm){
+        Authentication authentication=authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(signInForm.getUsername(),signInForm.getPassword())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token=jwtProvider.createJwt(authentication);
+        UserPrincipal userPrincipal= (UserPrincipal) authentication.getPrincipal();
+        return ResponseEntity.ok(new ResponseJwt(token,userPrincipal.getName(),userPrincipal.getAuthorities()));
     }
 }
