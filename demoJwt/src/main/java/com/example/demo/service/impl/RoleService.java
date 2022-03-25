@@ -14,7 +14,7 @@ public class RoleService implements IRoleService {
     @Autowired
     IRoleRepository roleRepository;
     @Override
-    public Optional<Role> findByUsername(RoleName name) {
-        return roleRepository.findByUsername(name);
+    public Optional<Role> findByName(RoleName name) {
+        return roleRepository.findByName(name);
     }
 }
